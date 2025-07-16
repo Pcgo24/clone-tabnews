@@ -1,0 +1,7 @@
+services:
+  database:
+    image: "postgres:16.9-alpine3.22"
+    environment:
+      POSTGRES_PASSWORD: "senhatop"
+    ports:
+      - "5432:5432"
