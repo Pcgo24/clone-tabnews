@@ -5,5 +5,6 @@ async function status(request, response) {
   console.log(result.rows);
   response.status(200).json({ chave: "isso realmente está ficando legal" });
 }
+// This file is used to handle the status endpoint of the API.
 
 export default status;

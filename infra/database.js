@@ -17,3 +17,4 @@ async function query(queryObject) {
 export default {
   query: query,
 };
+// This file is used to interact with the PostgreSQL database.
