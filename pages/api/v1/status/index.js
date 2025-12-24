@@ -1,20 +1,41 @@
-import database from "infra/database.js";
+import database from "infra/database";
 
 async function status(request, response) {
-  try {
-    const result = await database.query("SELECT 1 + 1 AS resultado");
-    console.log(result.rows);
-    return response
-      .status(200)
-      .json({ chave: "isso realmente está ficando legal" });
-  } catch (err) {
-    // Se o banco não estiver disponível, retornamos um 200 com informação reduzida
-    console.error("Falha ao conectar no banco de dados: ", err?.message || err);
-    return response
-      .status(200)
-      .json({ chave: "serviço ok", db: "indisponivel" });
+  const updatedAt = new Date().toISOString();
+
+  await database.query("SELECT version();");
+
+  const databaseVersionResult = await database.query("SHOW server_version;");
+  const databaseVersionValue =
+    databaseVersionResult.rows[0].server_version;
+
+  const databaseMaxConectionsResult = await database.query(
+    "SHOW max_connections;",
+  );
+  const databaseMaxConnectionsValue =
+    databaseMaxConectionsResult.rows[0].max_connections;
+
+  const databaseName = process.env.POSTGRES_DB;
+  const databaseOpenedConnectionsResult = await database.query({
+    text: "SELECT COUNT (*)::int FROM pg_stat_activity WHERE datname = $1;",
+    values: [databaseName],
   }
+  );
+  const databaseOpenedConnectionsValue =
+    databaseOpenedConnectionsResult.rows[0].count;
+
+    console.log(databaseOpenedConnectionsValue);
+
+  response.status(200).json({
+    updated_at: updatedAt,
+    dependencies: {
+      database: {
+        version: databaseVersionValue,
+        max_connections: parseInt(databaseMaxConnectionsValue),
+        opened_connections: databaseOpenedConnectionsValue,
+      },
+    },
+  });
 }
-// This file is used to handle the status endpoint of the API.
 
 export default status;
