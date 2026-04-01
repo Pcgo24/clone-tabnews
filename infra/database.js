@@ -7,6 +7,10 @@ async function query(queryObject) {
     user: process.env.POSTGRES_USER,
     database: process.env.POSTGRES_DB,
     password: process.env.POSTGRES_PASSWORD,
+    ssl:
+      process.env.POSTGRES_SSL === "REQUIRE"
+        ? { rejectUnauthorized: false }
+        : false,
   });
 
   console.log("CREDENCIAIS DO POSTGRES:", {
@@ -16,8 +20,6 @@ async function query(queryObject) {
     database: process.env.POSTGRES_DB,
     password: process.env.POSTGRES_PASSWORD,
   });
-
-  await client.connect();
 
   try {
     await client.connect();
@@ -29,10 +31,6 @@ async function query(queryObject) {
   } finally {
     await client.end();
   }
-
-  const result = await client.query(queryObject);
-
-  return result;
 }
 
 export default {
