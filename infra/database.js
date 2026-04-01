@@ -7,10 +7,7 @@ async function query(queryObject) {
     user: process.env.POSTGRES_USER,
     database: process.env.POSTGRES_DB,
     password: process.env.POSTGRES_PASSWORD,
-    ssl:
-      process.env.POSTGRES_SSL === "REQUIRE"
-        ? { rejectUnauthorized: false }
-        : false,
+    ssl: require,
   });
 
   console.log("CREDENCIAIS DO POSTGRES:", {
